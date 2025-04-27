@@ -53,7 +53,7 @@ y = df['risk_level']
 
 # ======== STEP 5: Split the Data ========
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, yt, test_size=0.2, random_state=42)
 
 # ======== STEP 6: Train the Model ========
 
