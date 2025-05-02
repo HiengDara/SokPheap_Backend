@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: symptom-tracker-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: symptom-tracker
+  template:
+    metadata:
+      labels:
+        app: symptom-tracker
+    spec:
+      containers:
+        - name: symptom-tracker
+          image: dara9999/symptom-tracker-service:latest
+          ports:
+            - containerPort: 5002

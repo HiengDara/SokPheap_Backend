@@ -11,9 +11,9 @@ import httpx
 # Load environment variables
 load_dotenv()
 
-# Load trained health risk model with error handling
+# Change this line in health_advisor.py:
 try:
-    model = load("health_model.pkl")
+    model = load("/app/model.joblib") # Absolute path in container
     print("✅ Model loaded successfully")
 except Exception as e:
     raise RuntimeError(f"Failed to load model: {str(e)}")
@@ -83,15 +83,19 @@ async def predict_risk(data: RiskInput):
         raise HTTPException(status_code=404, detail="Symptoms not found")
 
     try:
-        # Get the most recent vitals data based on 'recorded_at' field
-        latest_vital = sorted(vitals['data'], key=lambda x: x['recorded_at'], reverse=True)[0]
-
+        # ✅ Modified: Average all vitals instead of using the latest
         age = int(user['patient']['age'])
-        avg_systolic_bp = float(latest_vital.get('systolic_bp', 120))
-        avg_diastolic_bp = float(latest_vital.get('diastolic_bp', 80))
-        avg_heart_rate = float(latest_vital.get('heart_rate', 70))
-        avg_blood_glucose = float(latest_vital.get('blood_glucose', 90))
-        avg_temperature = float(latest_vital.get('temperature', 37.0))
+        vital_records = vitals['data']
+
+        def avg_field(field, default):
+            values = [float(v.get(field, default)) for v in vital_records if v.get(field) is not None]
+            return sum(values) / len(values) if values else default
+
+        avg_systolic_bp = avg_field('systolic_bp', 120)
+        avg_diastolic_bp = avg_field('diastolic_bp', 80)
+        avg_heart_rate = avg_field('heart_rate', 70)
+        avg_blood_glucose = avg_field('blood_glucose', 90)
+        avg_temperature = avg_field('temperature', 37.0)
 
         symptom_values = [float(v) for v in symptoms.values() if isinstance(v, (int, float))]
         avg_symptom_severity = sum(symptom_values) / len(symptom_values) if symptom_values else 0

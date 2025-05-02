@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: health-advisor-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: health-advisor
+  template:
+    metadata:
+      labels:
+        app: health-advisor
+    spec:
+      containers:
+        - name: health-advisor
+          image: dara9999/health-advisor-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5003
+          env:
+            - name: USER_SERVICE_URL
+              value: http://user-service:5000
+            - name: VITAL_SERVICE_URL
+              value: http://vital-signs-service:5001
+            - name: SYMPTOM_SERVICE_URL
+              value: http://symptom-tracker-service:5002

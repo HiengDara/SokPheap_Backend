@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: api-gateway
+          image: dara9999/api-gateway-service:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: USER_SERVICE_URL
+              value: http://user-service:5000
+            - name: VITAL_SERVICE_URL
+              value: http://vital-signs-service:5001
+            - name: SYMPTOM_SERVICE_URL
+              value: http://symptom-tracker-service:5002
+            - name: HEALTH_ADVISOR_SERVICE_URL
+              value: http://health-advisor-service:5003

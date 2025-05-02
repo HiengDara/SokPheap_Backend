@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vital-signs-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vital-signs-service
+  template:
+    metadata:
+      labels:
+        app: vital-signs-service
+    spec:
+      containers:
+      - name: vital-signs-service
+        image: dara9999/vital-signs-service:latest
+        ports:
+        - containerPort: 5001
